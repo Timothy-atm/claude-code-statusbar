@@ -120,4 +120,4 @@ Copy-Item hooks\track-active-skill.ps1 "$env:USERPROFILE\.claude\hooks\track-act
 
 ## License
 
-MIT
+All rights reserved (see LICENSE).
