@@ -1,8 +1,8 @@
 # statusline.ps1 - Claude Code status line (Windows / PowerShell)
 # Shows: context window + rate-limit bars  |  caveman mode (if installed)  |  active skills
-# Wire in settings.json:
+# Wire in settings.json (launched via cmd, which calls Windows PowerShell):
 #   "statusLine": { "type": "command",
-#     "command": "pwsh -NoProfile -File \"%USERPROFILE%\\.claude\\statusline.ps1\"" }
+#     "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\statusline.ps1\"" }
 $ErrorActionPreference = 'SilentlyContinue'
 
 $raw = [Console]::In.ReadToEnd()

@@ -1,6 +1,6 @@
 # track-active-skill.ps1 - records the active/last-solicited skill (Windows / PowerShell)
 # Wire to TWO events in settings.json (PreToolUse matcher "Skill" + UserPromptExpansion):
-#   "command": "pwsh -NoProfile -File \"%USERPROFILE%\\.claude\\hooks\\track-active-skill.ps1\""
+#   "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\hooks\\track-active-skill.ps1\""
 # Built-in slash commands (/model, /clear, ...) are filtered: a name only counts if it
 # matches a real skill directory. Never blocks (always exit 0).
 $ErrorActionPreference = 'SilentlyContinue'

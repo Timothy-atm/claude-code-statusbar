@@ -27,7 +27,7 @@ The caveman badge is fully optional — if `.caveman-active` is absent (caveman 
 ## Requirements
 
 - **macOS / Linux:** `bash`, `jq`, a terminal with UTF-8 (for the emoji/bars)
-- **Windows:** PowerShell 7 (`pwsh`), a terminal with UTF-8 (Windows Terminal recommended)
+- **Windows:** the built-in **Windows PowerShell 5.1** (`powershell.exe`, preinstalled — no install needed; PowerShell 7 `pwsh` also works). Claude Code launches the commands through **cmd**, which calls PowerShell to run the `.ps1` scripts. Use Windows Terminal for proper UTF-8 emoji rendering.
 
 ## Install — macOS / Linux
 
@@ -73,24 +73,26 @@ New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\hooks" | Out-Null
 Copy-Item hooks\track-active-skill.ps1 "$env:USERPROFILE\.claude\hooks\track-active-skill.ps1"
 ```
 
-2. Merge this into `%USERPROFILE%\.claude\settings.json` (keep your existing keys):
+2. Merge this into `%USERPROFILE%\.claude\settings.json` (keep your existing keys).
+   The commands run through **cmd**, which expands `%USERPROFILE%` and calls the
+   built-in `powershell` to execute the scripts:
 
 ```json
 {
   "statusLine": {
     "type": "command",
-    "command": "pwsh -NoProfile -Command \"& $env:USERPROFILE\\.claude\\statusline.ps1\""
+    "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\statusline.ps1\""
   },
   "hooks": {
     "PreToolUse": [
       { "matcher": "Skill",
-        "hooks": [ { "type": "command", "command": "pwsh -NoProfile -Command \"& $env:USERPROFILE\\.claude\\hooks\\track-active-skill.ps1\"", "timeout": 5 } ] }
+        "hooks": [ { "type": "command", "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\hooks\\track-active-skill.ps1\"", "timeout": 10 } ] }
     ],
     "UserPromptExpansion": [
-      { "hooks": [ { "type": "command", "command": "pwsh -NoProfile -Command \"& $env:USERPROFILE\\.claude\\hooks\\track-active-skill.ps1\"", "timeout": 5 } ] }
+      { "hooks": [ { "type": "command", "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"%USERPROFILE%\\.claude\\hooks\\track-active-skill.ps1\"", "timeout": 10 } ] }
     ],
     "SessionStart": [
-      { "hooks": [ { "type": "command", "command": "pwsh -NoProfile -Command \"Remove-Item -Force $env:USERPROFILE\\.claude\\.active_skill -ErrorAction SilentlyContinue\"", "timeout": 5 } ] }
+      { "hooks": [ { "type": "command", "command": "del /q \"%USERPROFILE%\\.claude\\.active_skill\" 2>nul", "timeout": 5 } ] }
     ]
   }
 }
@@ -98,7 +100,11 @@ Copy-Item hooks\track-active-skill.ps1 "$env:USERPROFILE\.claude\hooks\track-act
 
 3. **Restart Claude Code.**
 
-> If you run Claude Code under WSL or Git Bash on Windows, use the macOS / Linux (bash) install instead.
+> Notes for Windows:
+> - `powershell.exe` (Windows PowerShell 5.1) is preinstalled; if you have PowerShell 7 you can swap `powershell` for `pwsh`.
+> - `-ExecutionPolicy Bypass` lets the `.ps1` run on locked-down machines without changing your global policy.
+> - The `SessionStart` clear uses cmd's native `del` (no PowerShell needed).
+> - If you instead run Claude Code under **WSL or Git Bash**, use the macOS / Linux (bash) install.
 
 ## Customising
 
